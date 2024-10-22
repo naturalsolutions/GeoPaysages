@@ -1,4 +1,5 @@
-from flask import render_template, Blueprint, abort
+from flask import render_template, Blueprint, abort, request, redirect, url_for
+from functools import wraps
 from sqlalchemy import text
 from sqlalchemy.sql.expression import desc
 import models
@@ -21,10 +22,30 @@ site_schema = models.TSiteSchema(many=True)
 themes_sthemes_schema = models.CorSthemeThemeSchema(many=True)
 communes_schema = models.CommunesSchema(many=True)
 
+def localeGuard(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        locale = utils.getLocale()
+        if not utils.isMultiLangs() and locale is not None:
+            return redirect(url_for(request.endpoint))
+        if utils.isMultiLangs() and locale is None:
+            matched_locale = request.accept_languages.best_match(['fr', 'en'])
+            if matched_locale is None:
+                return redirect('/')
+            return redirect(url_for(request.endpoint, locale=matched_locale))
+        return f(*args, **kwargs)
+    return decorated_function
 
+def homeLocaleSelector():
+    return "Select a language"
 
 @main.route('/')
-def home():
+@main.route('/<string:locale>/')
+def home(locale=None):
+    if utils.isMultiLangs() and locale is None:
+        return homeLocaleSelector()
+    if not utils.isMultiLangs() and locale is not None:
+        return redirect('/')
     sql = text("SELECT * FROM geopaysages.t_site p join geopaysages.t_observatory o on o.id=p.id_observatory where p.publish_site=true and o.is_published is true ORDER BY RANDOM() LIMIT 6")
     sites_proxy = db.engine.execute(sql).fetchall()
     sites = [dict(row.items()) for row in sites_proxy]
@@ -177,13 +198,18 @@ def site_photos_last(id_site):
 
 
 @main.route('/sites')
-def sites():
+@main.route('/<string:locale>/sites/')
+@localeGuard
+def sites(locale=None):
     data = utils.getFiltersData()
+    print(locale)
 
     return render_template('sites.jinja', filters=data['filters'], sites=data['sites'], observatories=data['observatories'])
 
 
-@main.route('/legal-notices')
+@main.route('/legal-notices/')
+@main.route('/<string:locale>/legal-notices/')
+@localeGuard
 def legal_notices():
 
     tpl = utils.getCustomTpl('legal_notices')

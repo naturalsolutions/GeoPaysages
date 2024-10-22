@@ -1,10 +1,10 @@
 from base64 import urlsafe_b64encode
-from flask import url_for
+from flask import url_for, request
 import os
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 import json
-from flask_babel import get_locale, gettext
+from flask_babel import gettext
 import random
 import string
 import models
@@ -21,8 +21,14 @@ observatory_schema = models.ObservatorySchema(many=True)
 site_schema = models.TSiteSchema(many=True)
 themes_sthemes_schema = models.CorSthemeThemeSchema(many=True)
 
+def getLocale():
+    return request.view_args.get('locale', None)
+
+def isMultiLangs():
+    return True
+
 def getCustomTpl(name):
-    tpl_local = f'custom/{name}_{get_locale().__str__()}.jinja'
+    tpl_local = f'custom/{name}_{getLocale()}.jinja'
     tpl_common = f'custom/{name}.jinja'
     if os.path.exists(f'tpl/{tpl_local}'):
         return tpl_local
