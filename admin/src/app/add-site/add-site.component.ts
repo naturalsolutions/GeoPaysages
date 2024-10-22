@@ -86,8 +86,8 @@ export class AddSiteComponent implements OnInit, OnDestroy {
   alert: { type: string; message: string };
   site: any;
   edit_btn = false;
-  edit_btn_text = 'Éditer';
-  submit_btn_text = 'Ajouter';
+  edit_btn_text = 'BUTTONS.EDIT';
+  submit_btn_text = 'BUTTONS.ADD';
   initPhotos: any[] = [];
   deleted_photos = [];
   new_photos = [];
@@ -130,7 +130,7 @@ export class AddSiteComponent implements OnInit, OnDestroy {
       this.observatories = results[3];
       if (this.id_site) {
         this.getSite(this.id_site);
-        this.submit_btn_text = 'Enregistrer';
+        this.submit_btn_text = 'BUTTONS.SUBMIT';
       } else {
         this.edit_btn = true;
         this.loadForm = true;
@@ -382,7 +382,7 @@ export class AddSiteComponent implements OnInit, OnDestroy {
           console.log('err upload photo', err);
           this.spinner.hide();
           if (err.error.error === 'image_already_exist') {
-            this.edit_btn_text = 'Annuler';
+            this.edit_btn_text = 'BUTTONS.CANCEL';
             this.edit_btn = true;
             this.setAlert(err.error.image);
           } else if (err.status === 403) {
@@ -648,7 +648,7 @@ export class AddSiteComponent implements OnInit, OnDestroy {
       this.initMarker(this.site.geom[0], this.site.geom[1]);
     } else {
       this.map.addControl(this.drawControl);
-      this.edit_btn_text = 'Annuler';
+      this.edit_btn_text = 'BUTTONS.CANCEL';
       this.siteForm.enable();
     }
     this.siteForm.controls['id_stheme'].setValue(this.site.subthemes);
@@ -689,6 +689,7 @@ export class AddSiteComponent implements OnInit, OnDestroy {
     this.deleted_photos.push(photo);
   }
 
+  // TODO: Traduire les messages liés aux toasts
   deleteSite() {
     this.sitesService.deleteSite(this.id_site).subscribe(
       (res) => {

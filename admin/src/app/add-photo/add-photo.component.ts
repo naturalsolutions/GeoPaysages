@@ -88,8 +88,8 @@ export class AddPhotoComponent implements OnInit {
   imageLaoded = false;
   private modalRef: NgbModalRef;
   disableButton = false;
-  btn_text = 'Ajouter';
-  title = 'Ajouter une photo';
+  btn_text = 'ACTIONS.ADD';
+  title = "{{ 'ACTIONS.ADD' | translate: {article:('ARTICLES.UNE' | translate), varname: ('COMMONS.PICTURE' | translate) }  }}";
   alert: any;
   @Output() photoModal = new EventEmitter();
   @Input() inputImage = null;

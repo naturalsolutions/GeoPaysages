@@ -1,0 +1,107 @@
+{
+    "SITE_MNGMT":{
+        "OBSERVATION_POINT":"Point d'observation",
+        "SITE": "Site",
+        "OBSERVATORY": "Observatoire",
+        "CITY": "Commune",
+        "REFERENCE": "Référence",
+        "THEME": "Thème",
+        "SUBTOPIC": "Sous thème",
+        "MAIN_THEME": "Thème principal",
+        "TESTIMONIALS": "Témoignages",
+        "NOTICE_LABEL": "Notice technique",
+        "DESCRIPTION": "Description",
+        "LEGEND":"Légende",
+        "LONGITUDE": "Longitude",
+        "LATITUDE": "Latitude",
+        "SITE_PHOTO": "Photo de site",
+        "JPEG_INSTRUCTIONS": "Utiliser des jpeg de même ratio, assez grand mais larg. < 5000px, poids < 5Mo",
+        "PLACEHOLDER_LEGEND":"Ecrivez ici la légende du site",
+        "PLACEHOLDER_DESC":"Ecrivez ici la description du site",
+        "PLACEHOLDER_TESTIMONIALS":"Ecrivez ici les témoignages",
+        "CONFIRM_DELETE": {
+          "TITLE": "Supprimer le site",
+          "BODY": "Êtes-vous sûr de vouloir supprimer ce Site ? Sa suppression sera définitive.",
+          "CANCEL": "Annuler",
+          "CONFIRM": "Oui"
+        }
+      },
+  "OBSERVATORIES_MNGMT":{
+    "OBSERVATORY": "Observatoire",
+    "ZONING": "Zonage",
+    "THEME_COLOR": "Couleur de thème",
+    "TOOLTIP_THEME_COLOR":"S'applique sur les pins et le zonage",
+    "TOOLTIP_THUMBNAIL":"S'applique sur la vignette en page d’accueil",
+    "ADVICE_THUMBNAIL":"JPG, taille conseillée 200x200px",
+    "ADVICE_LOGO":"PNG, taille conseillée 150x150px",
+     "PLACEHOLDER_ZONING":"Coller ici la géométrie de la zone de l’observatoire au format WKT de type MultiPolygon",
+  "TOOLTIP_LOGO":"S’applique sur les différentes listes des observatoires (page gestion des observatoires et sur la carte) ainsi que sur la fiche des sites"
+    },
+    "GALLERY_MNGMT":{
+      "GALLERY": "Gallerie",
+      "PICTURE_CREDITS": "Crédits photographiques",
+      "THUMBNAIL_MAIN_MESSAGE": "Définir comme vignette principale",
+      "APPROXIMATE_DATE":"Date approximative",
+      "SHOOTING_DATE":"Date de prise de vue",
+      "CONFIRM_DELETE": {
+        "TITLE": "Supprimer la photo",
+        "BODY": "Êtes-vous sûr de vouloir supprimer cette photo ?<br> Sa suppression sera définitive",
+        "CANCEL": "Annuler",
+        "CONFIRM": "Oui"
+      }
+  },
+    "NAV": {
+        "OBSERVATORIES": "Gestion des observatoires",
+        "SITES": "Gestion des sites d'observation",
+        "GALLERY": "Gestion de la galerie photos",
+        "LANGUAGE": "Langue",
+        "LOGOUT": "Déconnexion"
+      },
+      "LANGUAGES": {
+        "en": "Anglais",
+        "fr": "Français"
+      },
+      "BUTTONS":{
+        "ADD": "Ajouter",
+        "SUBMIT": "Enregistrer",
+        "CANCEL": "Annuler",
+        "EDIT": "Editer",
+        "BACK_TO_LIST": "Retour à la liste"
+    },
+    "COMMONS":{
+      "ADVICE":"Conseil",
+      "IS_PUBLISHED":"Est publié?",
+      "NAME":"Nom",
+      "REFERENCE":"Référence",
+      "LOGO":"Logo",
+      "PICTURE":"Photo",
+      "THUMBNAIL":"Vignette"
+    },
+    "FIELDS":{
+      "NAME": "Nom {{article}} {{ varname }}"
+    },
+    "ARTICLES": {
+      "LE": "le",
+      "LA": "la",
+      "LES": "les",
+      "L": "l'",
+      "DE": "de",
+      "DU": "du",
+      "UN": "un",
+      "UNE": "une",
+      "DES": "des",
+      "DE_L": "de l'"
+},
+"ACTIONS": {
+    "SELECT": "Sélectionner {{ article }} {{ varname }}",
+    "IMPORT": "Importer {{ article }} {{ varname }}",
+    "ADD": "Ajouter {{ article }} {{ varname }}",
+    "EDIT": "Editer {{ article }} {{ varname }}",
+    "DELETE": "Supprimer {{ article }} {{ varname }}",
+    "MODIFY": "Modifier {{ article }} {{ varname }}",
+    "PUBLISH": "Publier {{ article }} {{ varname }}",
+    "PUBLISH_DEFAULT":"Publier"
+  }
+
+}
+  

@@ -41,8 +41,8 @@ export class ObservatoryComponent implements OnInit {
   alert: { type: string; message: string };
   observatory: ObservatoryType;
   isEditing = false;
-  edit_btn_text = 'Éditer';
-  submit_btn_text = 'Ajouter';
+  edit_btn_text = 'BUTTONS.EDIT';
+  submit_btn_text = 'BUTTONS.ADD';
   initThumbs: any[] = [];
   deleted_thumbs = [];
   new_thumbs = [];
@@ -67,7 +67,7 @@ export class ObservatoryComponent implements OnInit {
     this.observatoryForm = this.formService.initFormObservatory();
     if (this.id_observatory) {
       this.getObservatory(this.id_observatory);
-      this.submit_btn_text = 'Enregistrer';
+      this.submit_btn_text = 'BUTTONS.ADD';
     } else {
       this.isEditing = true;
       this.loadForm = true;
@@ -263,7 +263,7 @@ export class ObservatoryComponent implements OnInit {
       this.selectedLogo = null;
       this.logoInput.nativeElement.value = '';
     } else {
-      this.edit_btn_text = 'Annuler';
+      this.edit_btn_text = 'BUTTONS.CANCEL';
       this.observatoryForm.enable();
     }
   }
