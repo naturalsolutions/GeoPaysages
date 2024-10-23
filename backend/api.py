@@ -63,7 +63,12 @@ def returnDdConf():
 
 @api.route('/api/observatories', methods=['GET'])
 def returnAllObservatories():
-    get_all = models.Observatory.query.order_by('title').all()
+    get_all = (
+        models.Observatory.query
+        .join(models.ObservatoryTranslation)
+        .order_by(models.ObservatoryTranslation.title)
+        .all()
+    )
     items = observatories_schema.dump(get_all)
     
     return jsonify(items)
@@ -445,9 +450,16 @@ def deletePhotos():
 
 @api.route('/api/communes', methods=['GET'])
 def returnAllcommunes():
-    get_all_communes = models.Communes.query.order_by('nom_commune').all()
+    get_all_communes = (models.Communes.query.join(models.CommunesTranslation).order_by(models.CommunesTranslation.nom_commune).all())
     communes = models.CommunesSchema(many=True).dump(get_all_communes)
     return jsonify(communes), 200
+
+
+@api.route('/api/languages', methods=['GET'])
+def returnAllLanguages():
+    get_all_languages = models.Lang.query.all()
+    languages = models.LangSchema(many=True).dump(get_all_languages)
+    return jsonify(languages), 200
 
 
 @api.route('/api/logout', methods=['GET'])
