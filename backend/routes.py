@@ -49,8 +49,14 @@ def home(locale=None):
         return homeLocaleSelector()
     if not utils.isMultiLangs() and locale is not None:
         return redirect("/")
+    locale = utils.getLocale()
     sql = text(
-        "SELECT * FROM geopaysages.t_site p join geopaysages.t_observatory o on o.id=p.id_observatory where p.publish_site=true and o.is_published is true ORDER BY RANDOM() LIMIT 6"
+        """SELECT * FROM geopaysages.t_site p 
+        join geopaysages.t_site_translation pt on p.id_site=pt.row_id and pt.lang_id = '{locale}'
+        join geopaysages.t_observatory o on o.id=p.id_observatory 
+        join geopaysages.t_observatory_translation ot on o.id=ot.row_id and ot.lang_id = '{locale}'
+        where pt.publish_site=true and ot.is_published is true ORDER BY RANDOM() LIMIT 6
+        """
     )
     sites_proxy = db.engine.execute(sql).fetchall()
     sites = [dict(row.items()) for row in sites_proxy]
@@ -76,9 +82,14 @@ def home(locale=None):
     # WAHO tordu l'histoire!
     if len(sites_without_photo):
         sql_missing_photos_str = (
-            "select distinct on (id_site) p.* from geopaysages.t_photo p join geopaysages.t_observatory o on o.id=p.id_observatory where p.id_site IN ("
+            "select distinct on (id_site) p.* from geopaysages.t_photo p "
+            + "join geopaysages.t_observatory o on o.id=p.id_observatory "
+            + "join geopaysages.t_observatory_translation ot on o.id=ot.row_id and ot.lang_id = '"
+            + locale
+            + "' "
+            + "where p.id_site IN ("
             + ",".join(sites_without_photo)
-            + ") and o.is_published is true order by id_site, filter_date desc"
+            + ") and ot.is_published is true order by id_site, filter_date desc"
         )
         sql_missing_photos = text(sql_missing_photos_str)
         missing_photos_result = db.engine.execute(sql_missing_photos).fetchall()
@@ -111,8 +122,20 @@ def home(locale=None):
         )
 
     all_sites = site_schema.dump(
-        models.TSite.query.join(models.Observatory).filter(
-            models.TSite.publish_site == True, models.Observatory.is_published == True
+        models.TSite.query.join(
+            models.TSiteTranslation,
+            (models.TSite.id_site == models.TSiteTranslation.row_id)
+            & (models.TSiteTranslation.lang_id == locale),
+        )
+        .join(models.Observatory)
+        .join(
+            models.ObservatoryTranslation,
+            (models.Observatory.id == models.ObservatoryTranslation.row_id)
+            & (models.ObservatoryTranslation.lang_id == locale),
+        )
+        .filter(
+            models.TSiteTranslation.publish_site == True,
+            models.ObservatoryTranslation.is_published == True,
         )
     )
 
@@ -122,9 +145,15 @@ def home(locale=None):
     carousel_photos = list(filter(lambda x: x != ".gitkeep", carousel_photos))
 
     if utils.isMultiObservatories() == True:
-        observatories = models.Observatory.query.filter(
-            models.Observatory.is_published == True
-        ).order_by(models.Observatory.title)
+        observatories = (
+            models.Observatory.query.join(
+                models.ObservatoryTranslation,
+                (models.Observatory.id == models.ObservatoryTranslation.row_id)
+                & (models.ObservatoryTranslation.lang_id == locale),
+            )
+            .filter(models.ObservatoryTranslation.is_published == True)
+            .order_by(models.ObservatoryTranslation.title)
+        )
         dump_observatories = observatory_schema_lite.dump(observatories)
 
         col_max = 5
