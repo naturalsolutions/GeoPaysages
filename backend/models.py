@@ -12,43 +12,44 @@ from sqlalchemy.dialects import postgresql
 
 
 class Conf(db.Model):
-    __tablename__ = 'conf'
-    __table_args__ = {'schema': 'geopaysages'}
+    __tablename__ = "conf"
+    __table_args__ = {"schema": "geopaysages"}
 
     key = db.Column(db.String, primary_key=True)
     value = db.Column(db.String)
 
+
 class ComparatorEnum(Enum):
-    sidebyside = 'sidebyside'
-    split = 'split'
+    sidebyside = "sidebyside"
+    split = "split"
+
 
 class Observatory(db.Model):
-    __tablename__ = 't_observatory'
-    __table_args__ = {'schema': 'geopaysages'}
+    __tablename__ = "t_observatory"
+    __table_args__ = {"schema": "geopaysages"}
 
-    id = db.Column(db.Integer, primary_key=True,
-                   server_default=db.FetchedValue())
+    id = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
     title = db.Column(db.String)
     ref = db.Column(db.String)
     color = db.Column(db.String)
     thumbnail = db.Column(db.String)
     logo = db.Column(db.String)
     comparator = db.Column(db.Enum(ComparatorEnum, name="comparator_enum"))
-    geom = db.Column(Geometry(geometry_type='MULTIPOLYGON', srid=4326))
+    geom = db.Column(Geometry(geometry_type="MULTIPOLYGON", srid=4326))
     is_published = db.Column(db.Boolean)
 
 
-
 class TSite(db.Model):
-    __tablename__ = 't_site'
-    __table_args__ = {'schema': 'geopaysages'}
+    __tablename__ = "t_site"
+    __table_args__ = {"schema": "geopaysages"}
 
-    id_site = db.Column(db.Integer, primary_key=True,
-                        server_default=db.FetchedValue())
-    id_observatory = db.Column(db.ForeignKey(
-        'geopaysages.t_observatory.id', name='t_site_fk_observatory'))
+    id_site = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
+    id_observatory = db.Column(
+        db.ForeignKey("geopaysages.t_observatory.id", name="t_site_fk_observatory")
+    )
     observatory = db.relationship(
-        'Observatory', primaryjoin='TSite.id_observatory == Observatory.id')
+        "Observatory", primaryjoin="TSite.id_observatory == Observatory.id"
+    )
     name_site = db.Column(db.String)
     ref_site = db.Column(db.String)
     desc_site = db.Column(db.String)
@@ -58,131 +59,180 @@ class TSite(db.Model):
     alti_site = db.Column(db.Integer)
     path_file_guide_site = db.Column(db.String)
     publish_site = db.Column(db.Boolean)
-    geom = db.Column(Geometry(geometry_type='POINT', srid=4326))
+    geom = db.Column(Geometry(geometry_type="POINT", srid=4326))
     main_photo = db.Column(db.Integer)
-    main_theme_id = db.Column(db.ForeignKey('geopaysages.dico_theme.id_theme'))
+    main_theme_id = db.Column(db.ForeignKey("geopaysages.dico_theme.id_theme"))
     main_theme = db.relationship(
-        'DicoTheme', primaryjoin='TSite.main_theme_id == DicoTheme.id_theme')
+        "DicoTheme", primaryjoin="TSite.main_theme_id == DicoTheme.id_theme"
+    )
 
 
 class CorSiteSthemeTheme(db.Model):
-    __tablename__ = 'cor_site_stheme_theme'
-    __table_args__ = {'schema': 'geopaysages'}
+    __tablename__ = "cor_site_stheme_theme"
+    __table_args__ = {"schema": "geopaysages"}
 
     id_site_stheme_theme = db.Column(
-        db.Integer, nullable=False, server_default=db.FetchedValue())
-    id_site = db.Column(db.ForeignKey(
-        'geopaysages.t_site.id_site'), primary_key=True, nullable=False)
-    id_stheme_theme = db.Column(db.ForeignKey(
-        'geopaysages.cor_stheme_theme.id_stheme_theme'), primary_key=True, nullable=False)
+        db.Integer, nullable=False, server_default=db.FetchedValue()
+    )
+    id_site = db.Column(
+        db.ForeignKey("geopaysages.t_site.id_site"), primary_key=True, nullable=False
+    )
+    id_stheme_theme = db.Column(
+        db.ForeignKey("geopaysages.cor_stheme_theme.id_stheme_theme"),
+        primary_key=True,
+        nullable=False,
+    )
 
     t_site = db.relationship(
-        'TSite', primaryjoin='CorSiteSthemeTheme.id_site == TSite.id_site', backref='cor_site_stheme_themes')
+        "TSite",
+        primaryjoin="CorSiteSthemeTheme.id_site == TSite.id_site",
+        backref="cor_site_stheme_themes",
+    )
     cor_stheme_theme = db.relationship(
-        'CorSthemeTheme', primaryjoin='CorSiteSthemeTheme.id_stheme_theme == CorSthemeTheme.id_stheme_theme', backref='cor_site_stheme_themes')
+        "CorSthemeTheme",
+        primaryjoin="CorSiteSthemeTheme.id_stheme_theme == CorSthemeTheme.id_stheme_theme",
+        backref="cor_site_stheme_themes",
+    )
 
 
 class CorSthemeTheme(db.Model):
-    __tablename__ = 'cor_stheme_theme'
-    __table_args__ = {'schema': 'geopaysages'}
+    __tablename__ = "cor_stheme_theme"
+    __table_args__ = {"schema": "geopaysages"}
 
     id_stheme_theme = db.Column(
-        db.Integer, nullable=False, unique=True, server_default=db.FetchedValue())
-    id_stheme = db.Column(db.ForeignKey(
-        'geopaysages.dico_stheme.id_stheme'), primary_key=True, nullable=False)
-    id_theme = db.Column(db.ForeignKey(
-        'geopaysages.dico_theme.id_theme'), primary_key=True, nullable=False)
+        db.Integer, nullable=False, unique=True, server_default=db.FetchedValue()
+    )
+    id_stheme = db.Column(
+        db.ForeignKey("geopaysages.dico_stheme.id_stheme"),
+        primary_key=True,
+        nullable=False,
+    )
+    id_theme = db.Column(
+        db.ForeignKey("geopaysages.dico_theme.id_theme"),
+        primary_key=True,
+        nullable=False,
+    )
 
     dico_stheme = db.relationship(
-        'DicoStheme', primaryjoin='CorSthemeTheme.id_stheme == DicoStheme.id_stheme', backref='cor_stheme_themes')
+        "DicoStheme",
+        primaryjoin="CorSthemeTheme.id_stheme == DicoStheme.id_stheme",
+        backref="cor_stheme_themes",
+    )
     dico_theme = db.relationship(
-        'DicoTheme', primaryjoin='CorSthemeTheme.id_theme == DicoTheme.id_theme', backref='cor_stheme_themes')
+        "DicoTheme",
+        primaryjoin="CorSthemeTheme.id_theme == DicoTheme.id_theme",
+        backref="cor_stheme_themes",
+    )
 
 
 class DicoLicencePhoto(db.Model):
-    __tablename__ = 'dico_licence_photo'
-    __table_args__ = {'schema': 'geopaysages'}
+    __tablename__ = "dico_licence_photo"
+    __table_args__ = {"schema": "geopaysages"}
 
     id_licence_photo = db.Column(
-        db.Integer, primary_key=True, server_default=db.FetchedValue())
+        db.Integer, primary_key=True, server_default=db.FetchedValue()
+    )
     name_licence_photo = db.Column(db.String)
     description_licence_photo = db.Column(db.String)
 
 
 class DicoStheme(db.Model):
-    __tablename__ = 'dico_stheme'
-    __table_args__ = {'schema': 'geopaysages'}
+    __tablename__ = "dico_stheme"
+    __table_args__ = {"schema": "geopaysages"}
 
-    id_stheme = db.Column(db.Integer, primary_key=True,
-                          server_default=db.FetchedValue())
+    id_stheme = db.Column(
+        db.Integer, primary_key=True, server_default=db.FetchedValue()
+    )
     name_stheme = db.Column(db.String)
 
 
 class DicoTheme(db.Model):
-    __tablename__ = 'dico_theme'
-    __table_args__ = {'schema': 'geopaysages'}
+    __tablename__ = "dico_theme"
+    __table_args__ = {"schema": "geopaysages"}
 
-    id_theme = db.Column(db.Integer, primary_key=True,
-                         server_default=db.FetchedValue())
+    id_theme = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
     name_theme = db.Column(db.String)
     icon = db.Column(db.String)
 
 
 class TRole(db.Model):
-    __tablename__ = 't_roles'
-    __table_args__ = {'schema': 'utilisateurs', 'extend_existing': True}
+    __tablename__ = "t_roles"
+    __table_args__ = {"schema": "utilisateurs", "extend_existing": True}
 
-    groupe = db.Column(db.Boolean, nullable=False,
-                       server_default=db.FetchedValue())
-    id_role = db.Column(db.Integer, primary_key=True,
-                        server_default=db.FetchedValue())
+    groupe = db.Column(db.Boolean, nullable=False, server_default=db.FetchedValue())
+    id_role = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
     identifiant = db.Column(db.String(100))
     nom_role = db.Column(db.String(50))
     prenom_role = db.Column(db.String(50))
     desc_role = db.Column(db.Text)
-    _pass = db.Column('pass', db.String(100))
-    _pass_plus = db.Column('pass_plus', db.String(100))
+    _pass = db.Column("pass", db.String(100))
+    _pass_plus = db.Column("pass_plus", db.String(100))
     email = db.Column(db.String(250))
-    id_organisme = db.Column('id_organisme', db.INTEGER(), autoincrement=False, nullable=True)
+    id_organisme = db.Column(
+        "id_organisme", db.INTEGER(), autoincrement=False, nullable=True
+    )
     remarques = db.Column(db.Text)
     date_insert = db.Column(db.DateTime)
     date_update = db.Column(db.DateTime)
-    uuid_role = db.Column('uuid_role', postgresql.UUID(), server_default=db.text('uuid_generate_v4()'), autoincrement=False, nullable=False)
-    active = db.Column('active', db.BOOLEAN(), server_default=db.text('true'), autoincrement=False, nullable=True)
-    champs_addi = db.Column('champs_addi', postgresql.JSONB(astext_type=db.Text()), autoincrement=False, nullable=True)
+    uuid_role = db.Column(
+        "uuid_role",
+        postgresql.UUID(),
+        server_default=db.text("uuid_generate_v4()"),
+        autoincrement=False,
+        nullable=False,
+    )
+    active = db.Column(
+        "active",
+        db.BOOLEAN(),
+        server_default=db.text("true"),
+        autoincrement=False,
+        nullable=True,
+    )
+    champs_addi = db.Column(
+        "champs_addi",
+        postgresql.JSONB(astext_type=db.Text()),
+        autoincrement=False,
+        nullable=True,
+    )
 
 
 class TPhoto(db.Model):
-    __tablename__ = 't_photo'
-    __table_args__ = {'schema': 'geopaysages'}
+    __tablename__ = "t_photo"
+    __table_args__ = {"schema": "geopaysages"}
 
-    id_photo = db.Column(db.Integer, primary_key=True,
-                         server_default=db.FetchedValue())
-    id_site = db.Column(db.ForeignKey('geopaysages.t_site.id_site'))
-    id_observatory = db.Column(db.ForeignKey('geopaysages.t_observatory.id'))
+    id_photo = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
+    id_site = db.Column(db.ForeignKey("geopaysages.t_site.id_site"))
+    id_observatory = db.Column(db.ForeignKey("geopaysages.t_observatory.id"))
     path_file_photo = db.Column(db.String)
-    id_role = db.Column(db.ForeignKey('utilisateurs.t_roles.id_role'))
+    id_role = db.Column(db.ForeignKey("utilisateurs.t_roles.id_role"))
     date_photo = db.Column(db.String)
     filter_date = db.Column(db.Date)
     legende_photo = db.Column(db.String)
     display_gal_photo = db.Column(db.Boolean)
-    id_licence_photo = db.Column(db.ForeignKey(
-        'geopaysages.dico_licence_photo.id_licence_photo'))
+    id_licence_photo = db.Column(
+        db.ForeignKey("geopaysages.dico_licence_photo.id_licence_photo")
+    )
 
     dico_licence_photo = db.relationship(
-        'DicoLicencePhoto', primaryjoin='TPhoto.id_licence_photo == DicoLicencePhoto.id_licence_photo', backref='t_photos')
+        "DicoLicencePhoto",
+        primaryjoin="TPhoto.id_licence_photo == DicoLicencePhoto.id_licence_photo",
+        backref="t_photos",
+    )
     t_role = db.relationship(
-        'TRole', primaryjoin='TPhoto.id_role == TRole.id_role', backref='t_photos')
+        "TRole", primaryjoin="TPhoto.id_role == TRole.id_role", backref="t_photos"
+    )
     t_site = db.relationship(
-        'TSite', primaryjoin='TPhoto.id_site == TSite.id_site', backref='t_photos')
+        "TSite", primaryjoin="TPhoto.id_site == TSite.id_site", backref="t_photos"
+    )
 
 
 class Communes(db.Model):
-    __tablename__ = 'communes'
-    __table_args__ = {'schema': 'geopaysages'}
+    __tablename__ = "communes"
+    __table_args__ = {"schema": "geopaysages"}
 
-    code_commune = db.Column(db.String, primary_key=True,
-                             server_default=db.FetchedValue())
+    code_commune = db.Column(
+        db.String, primary_key=True, server_default=db.FetchedValue()
+    )
     nom_commune = db.Column(db.String)
 
 
@@ -191,8 +241,11 @@ class GeographySerializationField(fields.String):
         if value is None:
             return value
         else:
-            if attr == 'geom':
-                return [db.session.scalar(geo_funcs.ST_Y(value)), db.session.scalar(geo_funcs.ST_X(value))]
+            if attr == "geom":
+                return [
+                    db.session.scalar(geo_funcs.ST_Y(value)),
+                    db.session.scalar(geo_funcs.ST_X(value)),
+                ]
             else:
                 return None
 
@@ -200,17 +253,22 @@ class GeographySerializationField(fields.String):
         if value is None:
             return value
         else:
-            if attr == 'geom':
-                return WKTGeographyElement('POINT({0} {1})'.format(str(value.get('longitude')), str(value.get('latitude'))))
+            if attr == "geom":
+                return WKTGeographyElement(
+                    "POINT({0} {1})".format(
+                        str(value.get("longitude")), str(value.get("latitude"))
+                    )
+                )
             else:
                 return None
 
-#schemas#
+
+# schemas#
 
 
 class DicoThemeSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
-        fields = ('id_theme', 'name_theme', 'icon')
+        fields = ("id_theme", "name_theme", "icon")
 
 
 class DicoSthemeSchema(ma.SQLAlchemyAutoSchema):
@@ -221,19 +279,17 @@ class DicoSthemeSchema(ma.SQLAlchemyAutoSchema):
 
 class CorThemeSthemeSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
-        fields = ('id_stheme_theme',)
+        fields = ("id_stheme_theme",)
 
 
 class LicencePhotoSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
-        fields = ('id_licence_photo', 'name_licence_photo',
-                  'description_licence_photo')
+        fields = ("id_licence_photo", "name_licence_photo", "description_licence_photo")
 
 
 class RoleSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
-        fields = ('id_role', 'identifiant', 'nom_role',
-                  'id_organisme')
+        fields = ("id_role", "identifiant", "nom_role", "id_organisme")
 
 
 class TPhotoSchema(ma.SQLAlchemyAutoSchema):
@@ -247,34 +303,34 @@ class TPhotoSchema(ma.SQLAlchemyAutoSchema):
 
 class CorSthemeThemeSchema(ma.SQLAlchemyAutoSchema):
     dico_theme = ma.Nested(DicoThemeSchema, only=["id_theme", "name_theme"])
-    dico_stheme = ma.Nested(DicoSthemeSchema, only=[
-                            "id_stheme", "name_stheme"])
+    dico_stheme = ma.Nested(DicoSthemeSchema, only=["id_stheme", "name_stheme"])
 
     class Meta:
-        fields = ('dico_theme', 'dico_stheme')
-        #model = CorSthemeTheme
+        fields = ("dico_theme", "dico_stheme")
+        # model = CorSthemeTheme
 
 
 class ObservatorySchema(ma.SQLAlchemyAutoSchema):
     comparator = EnumField(ComparatorEnum, by_value=True)
     geom = fields.Method("geomSerialize")
-    
+
     @staticmethod
     def geomSerialize(obj):
         if obj.geom is None:
             return None
         p = to_shape(obj.geom)
-        s = p.simplify(.0001, preserve_topology=False)
+        s = p.simplify(0.0001, preserve_topology=False)
         return s.wkt
 
     class Meta:
         model = Observatory
         include_relationships = True
 
+
 class ObservatorySchemaFull(ma.SQLAlchemyAutoSchema):
     comparator = EnumField(ComparatorEnum, by_value=True)
     geom = fields.Method("geomSerialize")
-    
+
     @staticmethod
     def geomSerialize(obj):
         if obj.geom is None:
@@ -286,16 +342,17 @@ class ObservatorySchemaFull(ma.SQLAlchemyAutoSchema):
         model = Observatory
         include_relationships = True
 
+
 class ObservatorySchemaLite(ma.SQLAlchemyAutoSchema):
     comparator = EnumField(ComparatorEnum, by_value=False)
     geom = fields.Method("geomSerialize")
-    
+
     @staticmethod
     def geomSerialize(obj):
         if obj.geom is None:
             return None
         p = to_shape(obj.geom)
-        s = p.simplify(.001, preserve_topology=True)
+        s = p.simplify(0.001, preserve_topology=True)
         return s.wkt
 
     class Meta:
@@ -304,8 +361,10 @@ class ObservatorySchemaLite(ma.SQLAlchemyAutoSchema):
 
 
 class TSiteSchema(ma.SQLAlchemyAutoSchema):
-    geom = GeographySerializationField(attribute='geom')
-    observatory = ma.Nested(ObservatorySchema, only=["id", "title", "ref", "color", "logo"])
+    geom = GeographySerializationField(attribute="geom")
+    observatory = ma.Nested(
+        ObservatorySchema, only=["id", "title", "ref", "color", "logo"]
+    )
     main_theme = ma.Nested(DicoThemeSchema, only=["id_theme", "name_theme", "icon"])
 
     class Meta:
