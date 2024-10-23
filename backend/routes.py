@@ -6,7 +6,6 @@ import models
 import utils
 from config import COMPARATOR_VERSION
 from datetime import datetime
-from flask_babel import format_datetime
 import math
 import os
 
