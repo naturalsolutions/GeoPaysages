@@ -74,7 +74,9 @@
                   </div>
                   <div class="d-inline-block align-middle">
                     <span class="d-block text-capitalize" v-html="observatory.label"></span>
-                    <small class="d-block text-lowercase text-black-50" v-html="observatory.selectedSites && observatory.selectedSites.length + ' site(s) d\'observation(s)'"></small>
+                    <small class="d-block text-lowercase text-black-50" v-if="observatory.selectedSites && observatory.selectedSites.length">
+                      <span v-html="observatory.selectedSites.length"></span> {{_('sites.observation_points.item')}}
+                    </small>
                   </div>
                   <i class="ion-ios-arrow-down visible-collapsed ml-auto justify-content-center align-items-center"></i>
                   <i class="ion-ios-arrow-up hidden-collapsed ml-auto justify-content-center align-items-center"></i>
@@ -107,10 +109,10 @@
         </b-collapse>
       </div>
       <div class="maptools-top-right">
-        <b-button class="d-none d-md-inline-block" @click="onShareClick()" variant="primary">Partager</b-button>
+        <b-button class="d-none d-md-inline-block" @click="onShareClick()" variant="primary">{{_('map.share.button')}}</b-button>
       </div>
       <div class="maptools-bottom">
-        <b-button class="d-md-none" @click="onShareClick()" variant="primary">Partager</b-button>
+        <b-button class="d-md-none" @click="onShareClick()" variant="primary">{{_('map.share.button')}}</b-button>
       </div>
       <div class="maptools-bottom-right">
         <div class="block-legend d-none d-md-block">
@@ -134,7 +136,7 @@
             class="btn d-flex justify-content-between p-3 btn-toggle"
             v-b-toggle="'app_map_legend_collapse'"
           >
-            <span class="mr-3">Légende</span>
+            <span class="mr-3">{{_('map.legend.title')}}</span>
             <i class="icon ion-ios-arrow-up visible-collapsed"></i>
             <i class="icon ion-ios-arrow-down hidden-collapsed"></i>
           </a>
@@ -144,8 +146,8 @@
         <div class="map-wrapper h-100" ref="map"></div>
       </div>
     </div>
-    <b-modal ref="modal-copy-url" title="Partager" modal-class="modal-copy-url" hide-footer centered>
-      <p>Copier et partager le lien ci-dessus</p>
+    <b-modal ref="modal-copy-url" title="{{_('map.share.dialog.title')}}" modal-class="modal-copy-url" hide-footer centered>
+      <p>{{_('map.share.dialog.message')}}</p>
       <b-form-textarea
         v-model="shareUrl"
         rows="3"
@@ -161,6 +163,10 @@
         sites: {{sites | tojson}},
         filters: {{filters | tojson}},
         dbconf: {{dbconf | tojson}},
+        translations: {
+          share_copy_success_title: "{{_('map.share.copy_success.title')}}",
+          share_copy_success_message: "{{_('map.share.copy.copy_success.message')}}",
+        }
       })
     }
   };

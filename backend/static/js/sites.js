@@ -434,8 +434,8 @@ geopsg.initSites = (options) => {
 
         try {
           await navigator.clipboard.writeText(this.shareUrl);
-          this.$bvToast.toast('Le lien est prêt à être coller.', {
-            title: 'Copié !',
+          this.$bvToast.toast(options.translations.share_copy_success_message, {
+            title: options.translations.share_copy_success_title,
             variant: 'success',
             solid: true,
           });
