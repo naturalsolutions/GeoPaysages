@@ -22,10 +22,10 @@ site_schema = models.TSiteSchema(many=True)
 themes_sthemes_schema = models.CorSthemeThemeSchema(many=True)
 
 def getLocale():
-    return request.view_args.get('locale', None)
+    return request.view_args.get('locale', 'fr')
 
 def isMultiLangs():
-    return True
+    return False
 
 def getCustomTpl(name):
     tpl_local = f'custom/{name}_{getLocale()}.jinja'

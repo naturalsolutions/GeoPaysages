@@ -24,7 +24,7 @@ communes_schema = models.CommunesSchema(many=True)
 def localeGuard(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        locale = utils.getLocale()
+        locale = request.view_args.get('locale')
         if not utils.isMultiLangs() and locale is not None:
             return redirect(url_for(request.endpoint))
         if utils.isMultiLangs() and locale is None:

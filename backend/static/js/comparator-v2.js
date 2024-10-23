@@ -31,17 +31,17 @@ geopsg.comparator = (options) => {
 
   const getFormatedDate = (value) => {
     if (options.dbconf.comparator_date_format == 'year') {
-      return value.toLocaleString('fr-FR', {
+      return value.toLocaleString(options.locale, {
         year: 'numeric',
       });
     }
     if (options.dbconf.comparator_date_format == 'month') {
-      return value.toLocaleString('fr-FR', {
+      return value.toLocaleString(options.locale, {
         month: '2-digit',
         year: 'numeric',
       });
     } else {
-      return value.toLocaleString('fr-FR', {
+      return value.toLocaleString(options.locale, {
         month: '2-digit',
         day: '2-digit',
         year: 'numeric',
