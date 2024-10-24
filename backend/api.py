@@ -629,6 +629,31 @@ def returnAllLanguages():
     return jsonify(languages), 200
 
 
+@api.route("/api/languages", methods=["POST"])
+def add_languages():
+    data = request.get_json()
+    try:
+        get_all_existing_languages = models.Lang.query.all()
+        languages = {t.id: t for t in get_all_existing_languages}
+        for lang in data:
+            if lang["id"] not in languages:
+                lang_obj = models.Lang(
+                    id=lang["id"],
+                    label=lang["label"],
+                    is_published=lang["is_published"],
+                    is_default=lang["is_default"],
+                )
+                db.session.add(lang_obj)
+
+        db.session.commit()
+
+    except Exception as exception:
+        db.session.rollback() 
+        return jsonify({"error": str(exception)}), 400
+
+    return jsonify("languages added")
+
+
 @api.route("/api/logout", methods=["GET"])
 def logout():
     resp = Response("", 200)
