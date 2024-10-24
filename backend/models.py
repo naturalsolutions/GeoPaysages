@@ -21,16 +21,14 @@ class Conf(db.Model):
 
 class Lang(db.Model):
     __tablename__ = "lang"
-    __table_args__ = (
-        {"schema": "geopaysages"},
-    )
+    __table_args__ = ({"schema": "geopaysages"},)
 
     id = db.Column(db.String, primary_key=True)
     label = db.Column(db.String)
     is_published = db.Column(db.Boolean)
     is_default = db.Column(db.Boolean, default=False)
     __table_args__ = (
-        db.UniqueConstraint('is_default', name='uq_default_lang'),
+        db.UniqueConstraint("is_default", name="uq_default_lang"),
         {"schema": "geopaysages"},
     )
     observatory_translations = db.relationship(
@@ -520,9 +518,7 @@ class ObservatorySchemaLite(ObservatorySchema):
 class TSiteSchema(ma.SQLAlchemyAutoSchema):
     translations = ma.Nested(TSiteTranslationSchema, many=True)
     geom = GeographySerializationField(attribute="geom")
-    observatory = ma.Nested(
-        ObservatorySchema, only=["id", "ref", "color", "logo"]
-    )
+    observatory = ma.Nested(ObservatorySchema, only=["id", "ref", "color", "logo"])
     main_theme = ma.Nested(DicoThemeSchema, only=["id_theme", "translations", "icon"])
 
     class Meta:

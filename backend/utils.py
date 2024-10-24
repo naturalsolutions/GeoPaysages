@@ -82,13 +82,15 @@ def getDbConf():
 
 def isMultiObservatories():
     locale = getLocale()
-    # Pourrait passer par un count sql
     sql = text(
-        "SELECT o.id FROM geopaysages.t_observatory o join geopaysages.t_observatory_translation ot on o.id = ot.row_id and ot.lang_id = '{locale}' where ot.is_published is true"
+        f"""SELECT count(*) 
+        FROM geopaysages.t_observatory o 
+        join geopaysages.t_observatory_translation ot on o.id = ot.row_id and ot.lang_id = '{locale}' 
+        where ot.is_published is true"""
     )
-    result = db.engine.execute(sql).fetchall()
-    rows = [dict(row) for row in result]
-    if len(rows) > 1:
+    result = db.engine.execute(sql)
+    count = result.scalar()
+    if count > 1:
         return True
     return False
 

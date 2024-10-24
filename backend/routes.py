@@ -51,7 +51,7 @@ def home(locale=None):
         return redirect("/")
     locale = utils.getLocale()
     sql = text(
-        """SELECT * FROM geopaysages.t_site p 
+        f"""SELECT * FROM geopaysages.t_site p 
         join geopaysages.t_site_translation pt on p.id_site=pt.row_id and pt.lang_id = '{locale}'
         join geopaysages.t_observatory o on o.id=p.id_observatory 
         join geopaysages.t_observatory_translation ot on o.id=ot.row_id and ot.lang_id = '{locale}'
