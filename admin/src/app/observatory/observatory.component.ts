@@ -11,6 +11,8 @@ import { AuthService } from '../services/auth.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ObservatoryPatchType, ObservatoryType } from '../types';
 import * as io from 'jsts/org/locationtech/jts/io';
+import { TranslateService } from '@ngx-translate/core';
+import { combineLatest, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-observatory',
@@ -58,7 +60,8 @@ export class ObservatoryComponent implements OnInit {
     private toastr: ToastrService,
     private modalService: NgbModal,
     private authService: AuthService,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
@@ -120,19 +123,25 @@ export class ObservatoryComponent implements OnInit {
       try {
         const geom = reader.read(observatoryForm.value.geom);
         if (geom.getGeometryType() !== 'MultiPolygon') {
-          this.toastr.error(
-            'Le geom doit être un MultiPolygon.',
-            'Geom invalide',
-            {
+          this.getTranslatedMessages([
+            'INFO_MESSAGE.GEOM_SHOULD_BE_MULTIPOLYGON',
+            'ERRORS.INVALID_GEOM',
+          ]).subscribe(([errorMessage, title]) => {
+            this.toastr.error(errorMessage, title, {
               positionClass: 'toast-bottom-right',
-            }
-          );
+            });
+          });
           return;
         }
       } catch (error) {
-        this.toastr.error(error, 'Geom invalide', {
-          positionClass: 'toast-bottom-right',
-        });
+        this.translate
+          .get('ERRORS.INVALID_GEOM')
+          .subscribe((message: string) => {
+            this.toastr.error(error, message, {
+              positionClass: 'toast-bottom-right',
+            });
+          })
+       
         return;
       }
     }
@@ -152,27 +161,32 @@ export class ObservatoryComponent implements OnInit {
       }
     } catch (err) {
       if (err.status === 403) {
-        this.router.navigate(['']);
-        this.toastr.error('votre session est expirée', '', {
-          positionClass: 'toast-bottom-right',
+        this.translate.get('ERRORS.SESSION_EXPIRED').subscribe((message: string) => {
+          this.router.navigate(['']);
+          this.toastr.error(message, '', {
+            positionClass: 'toast-bottom-right',
+          });
         });
       } else {
-        this.toastr.error('Une erreur est survenue sur le serveur.', '', {
-          positionClass: 'toast-bottom-right',
+        this.translate.get('ERRORS.SERVER_ERROR').subscribe((message: string) => {
+          this.toastr.error(message, '', {
+            positionClass: 'toast-bottom-right',
+          });
         });
       }
     }
-    this.edit_btn_text = 'Éditer';
+    this.edit_btn_text = 'BUTTONS.EDIT';
     this.spinner.hide();
   }
 
-  setAlert(message) {
-    this.alert = {
-      type: 'danger',
-      message: 'La ' + message + ' existe déjà',
-    };
+  setAlert(message: string) {
+    this.translate.get('ALERTS.ITEM_EXISTS').subscribe((translatedMessage: string) => {
+      this.alert = {
+        type: 'danger',
+        message: `${translatedMessage.replace('{{ item }}', message)}`,
+      };
+    });
   }
-
   getObservatory(id_observatory) {
     this.observatoryService.getById(id_observatory).subscribe(
       (observatory) => {
@@ -180,9 +194,11 @@ export class ObservatoryComponent implements OnInit {
       },
       (err) => {
         console.log('err', err);
-        this.toastr.error('Une erreur est survenue sur le serveur.', '', {
-          positionClass: 'toast-bottom-right',
-        });
+        this.translate.get('ERRORS.SERVER_ERROR').subscribe((message: string) => {
+          this.toastr.error(message, '', {
+            positionClass: 'toast-bottom-right',
+          });
+        })
       },
       () => {
         this.patchForm();
@@ -196,10 +212,12 @@ export class ObservatoryComponent implements OnInit {
     return new Promise((resolve, reject) => {
       this.observatoryService.post(this.observatoryForm.value).subscribe(
         (res) => {
-          this.toastr.success('Observatoire ajouté', '', {
-            positionClass: 'toast-bottom-right',
-          });
+          this.translate.get("INFO_MESSAGE.SUCCESS_ADDED_OBSERVATORY").subscribe((message: string) => {
+            this.toastr.success(message, '', {
+              positionClass: 'toast-bottom-right',
+            })
           resolve(res);
+          });
         },
         (err) => {
           reject(err);
@@ -254,7 +272,7 @@ export class ObservatoryComponent implements OnInit {
   editForm() {
     this.isEditing = !this.isEditing;
     if (!this.isEditing) {
-      this.edit_btn_text = 'Éditer';
+      this.edit_btn_text = 'BUTTONS.EDIT';
       this.patchForm();
       this.alert = null;
       this.observatoryForm.disable();
@@ -324,5 +342,9 @@ export class ObservatoryComponent implements OnInit {
     if (this.mySubscription) {
       this.mySubscription.unsubscribe();
     }
+  }
+
+  getTranslatedMessages(keys: string[]): Observable<string[]> {
+    return combineLatest(keys.map(key => this.translate.get(key)));
   }
 }

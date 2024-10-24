@@ -75,7 +75,13 @@
         "REFERENCE":"Reference",
         "LOGO":"Logo",
         "PICTURE":"Picture",
-        "THUMBNAIL":"Thumbnail"
+        "THUMBNAIL":"Thumbnail",
+        "CONNECTION": "Sign in",
+        "CONNECT": "Connect",
+        "LOGIN": "Login",
+        "PASSWORD": "Password",
+        "YES": "Yes",
+        "NO": "No"
       },
       "FIELDS":{
         "NAME": "{{ varname }} name"
@@ -99,8 +105,26 @@
       "EDIT": "Edit {{ article }} {{ varname }}",
       "DELETE": "Delete  {{ article }} {{ varname }}",
       "MODIFY": "Change {{ article }} {{ varname }}",
+      "MODIFY_DEFAULT":"Edit",
       "PUBLISH": "Publish {{ article }} {{ varname }}",
       "PUBLISH_DEFAULT":"Publish"
+    },
+    "ERRORS": {
+      "EXPIRED_SESSION": "Your session has expired, please log in again.",
+      "SERVER_ERROR": "An error occurred on the server, please refresh the page.",
+      "INVALID_GEOM": "The geometry is invalid."
+    },
+    "INFO_MESSAGE": {
+      "NO_PICTURE": "Please import a picture.",
+      "RECENTER_MAP": "Recenter the map.",
+      "SUCESS_ADDED_SITE": "Observatory point added successfully.",
+      "SUCCESS_UPDATED_SITE": "Observatory point updated successfully.",
+      "SUCCESS_ADDED_OBSERVATORY": "Observatory added successfully.",
+      "SUCCESS_UPDATED_OBSERVATORY": "Observatory updated successfully.",
+      "GEOM_SHOULD_BE_MULTIPOLYGON": "The geometry must be a MultiPolygon."
+    },
+    "ALERTS": {
+      "ITEM_EXISTS": "« {{ item }} » already exists."
     }
 }
 

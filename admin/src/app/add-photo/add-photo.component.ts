@@ -23,6 +23,7 @@ import { ToastrService } from 'ngx-toastr';
 import { forkJoin } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { TranslateService } from '@ngx-translate/core';
 
 const I18N_VALUES = {
   fr: {
@@ -88,8 +89,7 @@ export class AddPhotoComponent implements OnInit {
   imageLaoded = false;
   private modalRef: NgbModalRef;
   disableButton = false;
-  btn_text = 'ACTIONS.ADD';
-  title = "{{ 'ACTIONS.ADD' | translate: {article:('ARTICLES.UNE' | translate), varname: ('COMMONS.PICTURE' | translate) }  }}";
+  isEdition = false;
   alert: any;
   @Output() photoModal = new EventEmitter();
   @Input() inputImage = null;
@@ -104,7 +104,8 @@ export class AddPhotoComponent implements OnInit {
     public calendar: NgbCalendar,
     datePickerConfig: NgbDatepickerConfig,
     private authService: AuthService,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private translate: TranslateService
   ) {
     datePickerConfig.minDate = { year: 1800, month: 1, day: 1 };
     datePickerConfig.maxDate = { year: 2200, month: 12, day: 31 };
@@ -113,7 +114,6 @@ export class AddPhotoComponent implements OnInit {
 
   ngOnInit() {
     this.currentUser = this.authService.currentUser;
-
     if (this.licences) {
       this.onInitData();
     } else {
@@ -126,8 +126,7 @@ export class AddPhotoComponent implements OnInit {
 
   onInitData() {
     if (this.inputImage) {
-      this.title = 'Modifier la photo';
-      this.btn_text = 'Modifier';
+      this.isEdition = true;
       this.updateForm();
     } else {
       this.initForm();
@@ -233,7 +232,10 @@ export class AddPhotoComponent implements OnInit {
       console.log('invalid form');
       this.disableButton = false;
       if (!this.imageName) {
-        this.alert = 'Veuillez importer une photo ';
+        this.translate.get('INFO_MESSAGE.NO_PICTURE').subscribe((message: string) => {
+          this.alert = message;
+        })
+       
       }
     }
   }
@@ -270,13 +272,17 @@ export class AddPhotoComponent implements OnInit {
         this.modalRef.close();
         if (err.status === 403) {
           this.router.navigate(['']);
-          this.toastr.error('votre session est expirée', '', {
-            positionClass: 'toast-bottom-right',
-          });
+          this.translate.get('ERRORS.EXPIRED_SESSION').subscribe((res: string) => {
+            this.toastr.error(res, '', {
+              positionClass: 'toast-bottom-right',
+            });
+          })
         } else
-          this.toastr.error('Une erreur est survenue sur le serveur.', '', {
+        this.translate.get('ERRORS.SERVER_ERROR').subscribe((res: string) => {
+          this.toastr.error(res, '', {
             positionClass: 'toast-bottom-right',
           });
+        })
       }
     );
   }
@@ -304,13 +310,17 @@ export class AddPhotoComponent implements OnInit {
         this.modalRef.close();
         if (err.status === 403) {
           this.router.navigate(['']);
-          this.toastr.error('votre session est expirée', '', {
-            positionClass: 'toast-bottom-right',
-          });
+          this.translate.get('ERRORS.EXPIRED_SESSION').subscribe((res: string) => {
+            this.toastr.error(res, '', {
+              positionClass: 'toast-bottom-right',
+            });
+          })
         } else
-          this.toastr.error('Une erreur est survenue sur le serveur.', '', {
+        this.translate.get('ERRORS.SERVER_ERROR').subscribe((res: string) => {
+          this.toastr.error(res, '', {
             positionClass: 'toast-bottom-right',
           });
+        })
       },
       () => {
         this.photoModal.emit(this.inputImage.t_site);

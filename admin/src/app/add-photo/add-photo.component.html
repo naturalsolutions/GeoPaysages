@@ -7,13 +7,13 @@
 
 <ng-template #content let-modal>
   <div class="modal-header">
-    <h5 class="modal-title">{{title}} </h5>
+    <h5 class="modal-title"> {{ isEdition ? ('ACTIONS.MODIFY' | translate: { article: ('ARTICLES.LA' | translate), varname: ('COMMONS.PICTURE' | translate) })  : ('ACTIONS.ADD' | translate: { article: ('ARTICLES.UNE' | translate), varname: ('COMMONS.PICTURE' | translate) }) }} </h5>
   </div>
   <form *ngIf="loadForm" [formGroup]="photoForm" (submit)="submitPhoto(photoForm)">
     <div class="modal-body">
       <button *ngIf="inputImage && currentUser.max_level_profil > 5" type="button" class="btn btn-outline-danger btn-delete"
         (click)="openDeleteModal(photoModal)">
-        <i class="icon-bin delete-photo"></i>"{{ 'ACTIONS.DELETE' | translate: {article:('ARTICLES.LA' | translate), varname: ('COMMONS.PICTURE' | translate) }  }}</button>
+        <i class="icon-bin delete-photo"></i>{{ 'ACTIONS.DELETE' | translate: {article:('ARTICLES.LA' | translate), varname: ('COMMONS.PICTURE' | translate) }  }}</button>
       <div class="inner-checkbox form-group">
         <div class="label">{{ 'ACTIONS.PUBLISH' | translate: {article:('ARTICLES.LA' | translate), varname: ('COMMONS.PICTURE' | translate) }  }} :</div>
         <label class="switch ">
@@ -72,7 +72,7 @@
     </div>
     <div class="modal-footer">
       <button type="button" class="red-btn" style="margin-right: 10px" (click)="onCancel()">{{'BUTTONS.CANCEL' | translate}}</button>
-      <button type="submit" class="green-btn" [disabled]="disableButton">{{btn_text}}</button>
+      <button type="submit" class="green-btn" [disabled]="disableButton">{{ isEdition ? ('ACTIONS.MODIFY_DEFAULT' | translate)  : ('BUTTONS.ADD' | translate) }}</button>
     </div>
   </form>
 </ng-template>
@@ -86,6 +86,6 @@
   </div>
   <div class="modal-footer">
     <button type="button" class="cancel-btn" style="margin-right: 10px" (click)="cancelDelete()">{{'BUTTONS.CANCEL' | translate}}</button>
-    <button type="button" class="green-btn" (click)="deletePhoto()">OUI</button>
+    <button type="button" class="green-btn" (click)="deletePhoto()">{{ 'COMMONS.YES' | translate}}</button>
   </div>
 </ng-template>

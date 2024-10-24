@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { forkJoin } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-gallery',
@@ -23,7 +24,8 @@ export class GalleryComponent implements OnInit {
     public sitesService: SitesService,
     protected router: Router,
     private toastr: ToastrService,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
@@ -38,9 +40,11 @@ export class GalleryComponent implements OnInit {
       (error) => {
         this.spinner.hide();
         console.log('getGallery error', error);
-        this.toastr.error('Une erreur est survenue sur le serveur.', '', {
-          positionClass: 'toast-bottom-right',
-        });
+        this.translate.get('ERRORS.SERVER_ERROR').subscribe((res: string) => {
+          this.toastr.error(res, '', {
+            positionClass: 'toast-bottom-right',
+          });
+        })
       }
     );
   }
@@ -70,9 +74,11 @@ export class GalleryComponent implements OnInit {
       },
       (error) => {
         console.log('getPhotosSite error', error);
-        this.toastr.error('Une erreur est survenue sur le serveur.', '', {
-          positionClass: 'toast-bottom-right',
-        });
+        this.translate.get('ERRORS.SERVER_ERROR').subscribe((res: string) => {
+          this.toastr.error(res, '', {
+            positionClass: 'toast-bottom-right',
+          });
+        })
         this.spinner.hide();
       }
     );
@@ -97,13 +103,17 @@ export class GalleryComponent implements OnInit {
       (err) => {
         if (err.status === 403) {
           this.router.navigate(['']);
-          this.toastr.error('votre session est expirée', '', {
-            positionClass: 'toast-bottom-right',
-          });
+          this.translate.get('ERRORS.EXPIRED_SESSION').subscribe((res: string) => {
+            this.toastr.error(res, '', {
+              positionClass: 'toast-bottom-right',
+            });
+          })
         } else
-          this.toastr.error('Une erreur est survenue sur le serveur.', '', {
+        this.translate.get('ERRORS.SERVER_ERROR').subscribe((res: string) => {
+          this.toastr.error(res, '', {
             positionClass: 'toast-bottom-right',
           });
+        })
       }
     );
   }

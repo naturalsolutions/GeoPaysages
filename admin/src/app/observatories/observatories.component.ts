@@ -12,6 +12,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { ObservatoriesService } from '../services/observatories.service';
 import { ObservatoryType } from '../types';
+import { TranslateService } from '@ngx-translate/core';
 
 type ObservatoryRowType = {
   observatory: ObservatoryType;
@@ -33,6 +34,7 @@ export class ObservatoriesComponent implements OnInit, OnDestroy {
     private changeDetector: ChangeDetectorRef,
     private spinner: NgxSpinnerService,
     private toastr: ToastrService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
@@ -52,9 +54,11 @@ export class ObservatoriesComponent implements OnInit, OnDestroy {
       },
       (err) => {
         this.spinner.hide();
-        this.toastr.error('Une erreur est survenue sur le serveur.', '', {
-          positionClass: 'toast-bottom-right',
-        });
+        this.translate.get('ERRORS.SERVER_ERROR').subscribe((message: string) => {
+          this.toastr.error(message, '', {
+            positionClass: 'toast-bottom-right',
+          });
+        })
         console.log('get items error: ', err);
       }
     );

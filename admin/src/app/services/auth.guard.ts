@@ -3,6 +3,7 @@ import { CanActivate, Router } from '@angular/router';
 import { AuthService } from './auth.service';
 import { LoginService } from './lgoin.service';
 import { DbConfService } from './dbconf.service';
+import { LanguageService } from './language.service';
 
 @Injectable()
 
@@ -11,7 +12,8 @@ export class AuthGuard implements CanActivate {
     protected router: Router,
     private authService: AuthService,
     private loginService: LoginService,
-    private dbConfService: DbConfService
+    private dbConfService: DbConfService,
+    private languageService: LanguageService
   ) {}
 
   getCurUser(): Promise<boolean> {
@@ -25,6 +27,8 @@ export class AuthGuard implements CanActivate {
           resolve(true);
         },
         (err) => {
+          const currentLang = this.languageService.getCurrentLang();
+          this.languageService.changeLanguage(currentLang);
           this.router.navigate(['']);
           resolve(false);
         }
@@ -35,6 +39,8 @@ export class AuthGuard implements CanActivate {
   async canActivate(): Promise<boolean> {
     const hasUser = await this.getCurUser();
     if (!hasUser) {
+      const currentLang = this.languageService.getCurrentLang();
+      this.languageService.changeLanguage(currentLang);
       this.router.navigate(['']);
       return false;
     }

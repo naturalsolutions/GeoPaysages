@@ -53,7 +53,7 @@ export class LanguageService {
  }
  // Récupère la langue préférée de l'utilisateur depuis le localStorage
  private getPreferredLanguage(): string {
-    return localStorage.getItem('preferredLanguage') || this.defaultLanguage; // 'fr' par défaut
+    return localStorage.getItem('preferredLanguage');
   }
 
 private setDefaultLanguage(): void {
@@ -63,20 +63,16 @@ private setDefaultLanguage(): void {
 
     // Obtenir la langue du navigateur
     const browserLang = navigator.language.split('-')[0]; // Extrait 'fr' de 'fr-FR'
-    console.log(`Browser language: ${browserLang}`);
     // Récupérer la langue préférée de l'utilisateur
     const preferredLang = this.getPreferredLanguage();
 
     // Vérifier si la langue du navigateur ou la langue préférée est supportée
     if (this.languages.includes(preferredLang)) {
       this.translate.use(preferredLang); // Utiliser la langue préférée
-      console.log(`Using preferred language: ${preferredLang}`);
     } else if (this.languages.includes(browserLang)) {
       this.translate.use(browserLang); // Utiliser la langue du navigateur
-      console.log(`Using browser language: ${browserLang}`);
     } else {
       this.translate.use(this.defaultLanguage); // Utiliser la langue par défaut si pas supportée
-      console.log(`Using default language: ${this.defaultLanguage}`)
     }
   }
 

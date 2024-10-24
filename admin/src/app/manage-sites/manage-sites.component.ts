@@ -11,6 +11,7 @@ import { Conf } from './../config';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-manage-sites',
@@ -27,6 +28,7 @@ export class ManageSitesComponent implements OnInit, OnDestroy {
     private changeDetector: ChangeDetectorRef,
     private spinner: NgxSpinnerService,
     private toastr: ToastrService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
@@ -59,9 +61,11 @@ export class ManageSitesComponent implements OnInit, OnDestroy {
       },
       (err) => {
         this.spinner.hide();
-        this.toastr.error('Une erreur est survenue sur le serveur.', '', {
-          positionClass: 'toast-bottom-right',
-        });
+        this.translate.get('ERRORS.SERVER_ERROR').subscribe((message: string) => {
+          this.toastr.error(message, '', {
+            positionClass: 'toast-bottom-right',
+          });
+        })
         console.log('get site error: ', err);
       }
     );
