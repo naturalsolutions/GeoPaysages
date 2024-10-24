@@ -2,7 +2,7 @@
 from geoalchemy2.types import Geometry
 import geoalchemy2.functions as geo_funcs
 from geoalchemy2.shape import to_shape
-from marshmallow import fields
+from marshmallow import fields, post_dump
 from marshmallow_enum import EnumField
 from shapely.geometry import mapping
 
@@ -381,6 +381,16 @@ class GeographySerializationField(fields.String):
 # schemas#
 
 
+def get_translated_data(self, data):
+    if not self.lang_id:
+        return data
+    for field in self.translatable_fields:
+        for translation in data["translations"]:
+            if translation["lang_id"] == self.lang_id:
+                data[field] = translation[field]
+    return data
+
+
 class LangSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Lang
@@ -430,6 +440,16 @@ class DicoSthemeTranslationSchema(ma.SQLAlchemyAutoSchema):
 class DicoThemeSchema(ma.SQLAlchemyAutoSchema):
     translations = ma.Nested(DicoThemeTranslationSchema, many=True)
 
+    translatable_fields = DicoThemeTranslationSchema.Meta.fields
+
+    def __init__(self, *args, **kwargs):
+        self.lang_id = kwargs.pop("locale", None)
+        super().__init__(*args, **kwargs)
+
+    @post_dump
+    def translate_fields(self, data, **kwargs):
+        return get_translated_data(self, data)
+
     class Meta:
         model = DicoTheme
         fields = ("id_theme", "icon", "translations")
@@ -437,6 +457,16 @@ class DicoThemeSchema(ma.SQLAlchemyAutoSchema):
 
 class DicoSthemeSchema(ma.SQLAlchemyAutoSchema):
     translations = ma.Nested(DicoSthemeTranslationSchema, many=True)
+
+    translatable_fields = DicoSthemeTranslationSchema.Meta.fields
+
+    def __init__(self, *args, **kwargs):
+        self.lang_id = kwargs.pop("locale", None)
+        super().__init__(*args, **kwargs)
+
+    @post_dump
+    def translate_fields(self, data, **kwargs):
+        return get_translated_data(self, data)
 
     class Meta:
         model = DicoStheme
@@ -468,8 +498,8 @@ class TPhotoSchema(ma.SQLAlchemyAutoSchema):
 
 
 class CorSthemeThemeSchema(ma.SQLAlchemyAutoSchema):
-    dico_theme = ma.Nested(DicoThemeSchema, only=["id_theme", "name_theme"])
-    dico_stheme = ma.Nested(DicoSthemeSchema, only=["id_stheme", "name_stheme"])
+    dico_theme = ma.Nested(DicoThemeSchema, only=["id_theme"])
+    dico_stheme = ma.Nested(DicoSthemeSchema, only=["id_stheme"])
 
     class Meta:
         fields = ("dico_theme", "dico_stheme")
@@ -480,6 +510,16 @@ class ObservatorySchema(ma.SQLAlchemyAutoSchema):
     translations = ma.Nested(ObservatoryTranslationSchema, many=True)
     comparator = EnumField(ComparatorEnum, by_value=True)
     geom = fields.Method("geomSerialize")
+
+    translatable_fields = ObservatoryTranslationSchema.Meta.fields
+
+    def __init__(self, *args, **kwargs):
+        self.lang_id = kwargs.pop("locale", None)
+        super().__init__(*args, **kwargs)
+
+    @post_dump
+    def translate_fields(self, data, **kwargs):
+        return get_translated_data(self, data)
 
     @staticmethod
     def geomSerialize(obj):
@@ -494,7 +534,21 @@ class ObservatorySchema(ma.SQLAlchemyAutoSchema):
         include_relationships = True
 
 
-class ObservatorySchemaFull(ObservatorySchema):
+class ObservatorySchemaFull(ma.SQLAlchemyAutoSchema):
+    translations = ma.Nested(ObservatoryTranslationSchema, many=True)
+    comparator = EnumField(ComparatorEnum, by_value=True)
+    geom = fields.Method("geomSerialize")
+    
+    translatable_fields = ObservatoryTranslationSchema.Meta.fields
+
+    def __init__(self, *args, **kwargs):
+        self.lang_id = kwargs.pop("locale", None)
+        super().__init__(*args, **kwargs)
+
+    @post_dump
+    def translate_fields(self, data, **kwargs):
+        return get_translated_data(self, data)
+    
     @staticmethod
     def geomSerialize(obj):
         if obj.geom is None:
@@ -503,8 +557,21 @@ class ObservatorySchemaFull(ObservatorySchema):
         return p.wkt
 
 
-class ObservatorySchemaLite(ObservatorySchema):
+class ObservatorySchemaLite(ma.SQLAlchemyAutoSchema):
+    translations = ma.Nested(ObservatoryTranslationSchema, many=True)
     comparator = EnumField(ComparatorEnum, by_value=False)
+    geom = fields.Method("geomSerialize")   
+
+    translatable_fields = ObservatoryTranslationSchema.Meta.fields
+
+    def __init__(self, *args, **kwargs):
+        self.lang_id = kwargs.pop("locale", None)
+        super().__init__(*args, **kwargs)
+
+    @post_dump
+    def translate_fields(self, data, **kwargs):
+        print("translate_fields", self.lang_id)
+        return get_translated_data(self, data)
 
     @staticmethod
     def geomSerialize(obj):
@@ -513,6 +580,10 @@ class ObservatorySchemaLite(ObservatorySchema):
         p = to_shape(obj.geom)
         s = p.simplify(0.001, preserve_topology=True)
         return s.wkt
+    
+    class Meta:
+        model = Observatory
+        include_relationships = True
 
 
 class TSiteSchema(ma.SQLAlchemyAutoSchema):
@@ -520,6 +591,16 @@ class TSiteSchema(ma.SQLAlchemyAutoSchema):
     geom = GeographySerializationField(attribute="geom")
     observatory = ma.Nested(ObservatorySchema, only=["id", "ref", "color", "logo"])
     main_theme = ma.Nested(DicoThemeSchema, only=["id_theme", "translations", "icon"])
+
+    translatable_fields = TSiteTranslationSchema.Meta.fields
+
+    def __init__(self, *args, **kwargs):
+        self.lang_id = kwargs.pop("locale", None)
+        super().__init__(*args, **kwargs)
+
+    @post_dump
+    def translate_fields(self, data, **kwargs):
+        return get_translated_data(self, data)
 
     class Meta:
         model = TSite
@@ -529,6 +610,16 @@ class TSiteSchema(ma.SQLAlchemyAutoSchema):
 
 class CommunesSchema(ma.SQLAlchemyAutoSchema):
     translations = ma.Nested(CommunesTranslationSchema, many=True)
+
+    translatable_fields = CommunesTranslationSchema.Meta.fields
+
+    def __init__(self, *args, **kwargs):
+        self.lang_id = kwargs.pop("locale", None)
+        super().__init__(*args, **kwargs)
+
+    @post_dump
+    def translate_fields(self, data, **kwargs):
+        return get_translated_data(self, data)
 
     class Meta:
         model = Communes

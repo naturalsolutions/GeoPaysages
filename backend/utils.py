@@ -14,11 +14,7 @@ import urllib.parse
 
 db = SQLAlchemy()
 
-dicotheme_schema = models.DicoThemeSchema(many=True)
-dicostheme_schema = models.DicoSthemeSchema(many=True)
 photo_schema = models.TPhotoSchema(many=True)
-observatory_schema = models.ObservatorySchema(many=True)
-site_schema = models.TSiteSchema(many=True)
 themes_sthemes_schema = models.CorSthemeThemeSchema(many=True)
 
 
@@ -75,7 +71,9 @@ def getDbConf():
         except Exception as exception:
             conf[row.get("key")] = row.get("value")
 
-    conf["default_sort_sites"] = conf.get("default_sort_sites", "name_site")
+    conf["default_sort_sites"] = conf.get(
+        "default_sort_sites", "geopaysages.t_site_translation.name_site"
+    )
 
     return conf
 
@@ -95,14 +93,37 @@ def isMultiObservatories():
     return False
 
 
+def getLocalizedSitesQuery():
+    locale = getLocale()
+    return (
+        models.TSite.query.join(
+            models.TSiteTranslation,
+            (models.TSite.id_site == models.TSiteTranslation.row_id)
+            & (models.TSiteTranslation.lang_id == locale),
+        )
+        .join(models.Observatory)
+        .join(
+            models.ObservatoryTranslation,
+            (models.Observatory.id == models.ObservatoryTranslation.row_id)
+            & (models.ObservatoryTranslation.lang_id == locale),
+        )
+        .filter(
+            models.TSiteTranslation.publish_site == True,
+            models.ObservatoryTranslation.is_published == True,
+        )
+    )
+
+
 def getFiltersData():
     dbconf = getDbConf()
+    locale = getLocale()
+    observatory_schema = models.ObservatorySchema(many=True, locale=locale)
+    site_schema = models.TSiteSchema(many=True, locale=locale)
+    dicotheme_schema = models.DicoThemeSchema(many=True, locale=locale)
+    dicostheme_schema = models.DicoSthemeSchema(many=True, locale=locale)
+
     sites = site_schema.dump(
-        models.TSite.query.join(models.Observatory)
-        .filter(
-            models.TSite.publish_site == True, models.Observatory.is_published == True
-        )
-        .order_by(dbconf["default_sort_sites"])
+        getLocalizedSitesQuery().order_by(text(dbconf["default_sort_sites"]))
     )
     for site in sites:
         cor_sthemes_themes = site.get("cor_site_stheme_themes")
@@ -204,11 +225,11 @@ def getFiltersData():
         filter for filter in filters if filter.get("name") == "township"
     ][0]
     str_map_in = ["'" + township + "'" for township in filter_township.get("items")]
-    sql_map_str = (
-        "SELECT code_commune AS id, nom_commune AS label FROM geopaysages.communes WHERE code_commune IN ("
-        + ",".join(str_map_in)
-        + ")"
-    )
+    sql_map_str = f"""SELECT c.code_commune AS id, ct.nom_commune AS label 
+        FROM geopaysages.communes c
+        JOIN geopaysages.communes_translation ct on ct.row_id = c.code_commune
+        WHERE code_commune IN ({",".join(str_map_in)})
+        AND ct.lang_id = '{locale}'"""
     sql_map = text(sql_map_str)
     townships_result = db.engine.execute(sql_map).fetchall()
     townships = [dict(row) for row in townships_result]
@@ -291,7 +312,7 @@ def getFiltersData():
             observatories.append(
                 {
                     "id": site["id_observatory"],
-                    "label": site["observatory"]["title"],
+                    "label": observatory["title"],
                     "data": {
                         "geom": observatory["geom"],
                         "color": observatory["color"],

@@ -13,13 +13,8 @@ main = Blueprint("main", __name__, template_folder="tpl")
 
 from env import db
 
-dicotheme_schema = models.DicoThemeSchema(many=True)
-dicostheme_schema = models.DicoSthemeSchema(many=True)
 photo_schema = models.TPhotoSchema(many=True)
-observatory_schema_lite = models.ObservatorySchemaLite(many=True)
-site_schema = models.TSiteSchema(many=True)
 themes_sthemes_schema = models.CorSthemeThemeSchema(many=True)
-communes_schema = models.CommunesSchema(many=True)
 
 
 def localeGuard(f):
@@ -50,6 +45,8 @@ def home(locale=None):
     if not utils.isMultiLangs() and locale is not None:
         return redirect("/")
     locale = utils.getLocale()
+    site_schema = models.TSiteSchema(many=True, locale=locale)
+    communes_schema = models.CommunesSchema(many=True, locale=locale)
     sql = text(
         f"""SELECT * FROM geopaysages.t_site p 
         join geopaysages.t_site_translation pt on p.id_site=pt.row_id and pt.lang_id = '{locale}'
@@ -154,6 +151,7 @@ def home(locale=None):
             .filter(models.ObservatoryTranslation.is_published == True)
             .order_by(models.ObservatoryTranslation.title)
         )
+        observatory_schema_lite = models.ObservatorySchemaLite(many=True, locale=locale)
         dump_observatories = observatory_schema_lite.dump(observatories)
 
         col_max = 5
@@ -191,7 +189,11 @@ def gallery():
 
 
 @main.route("/sites/<int:id_site>")
-def site(id_site):
+@main.route("/<string:locale>/sites/<int:id_site>")
+@localeGuard
+def site(id_site, locale):
+    site_schema = models.TSiteSchema(many=True, locale=locale)
+    communes_schema = models.CommunesSchema(many=True, locale=locale)
     get_site_by_id = models.TSite.query.filter_by(id_site=id_site, publish_site=True)
     site = site_schema.dump(get_site_by_id)
     if len(site) == 0:
@@ -249,6 +251,7 @@ def site(id_site):
 
 @main.route("/sites/<int:id_site>/photos/latest")
 def site_photos_last(id_site):
+    site_schema = models.TSiteSchema(many=True)
     get_site_by_id = models.TSite.query.filter_by(id_site=id_site, publish_site=True)
     site = site_schema.dump(get_site_by_id)
     if len(site) == 0:
@@ -279,7 +282,6 @@ def site_photos_last(id_site):
 @localeGuard
 def sites(locale=None):
     data = utils.getFiltersData()
-    print(locale)
 
     return render_template(
         "sites.jinja",
