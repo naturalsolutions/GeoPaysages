@@ -13,7 +13,7 @@ from werkzeug.exceptions import NotFound
 from werkzeug.wsgi import FileWrapper
 
 from pypnusershub import routes as fnauth
-from pypnusershub.db.models import AppUser, Application
+from pypnusershub.db.models import AppUser, Application, User
 import models
 import json
 import utils
@@ -93,6 +93,8 @@ def returnAllObservatories():
 @fnauth.check_auth(2)
 def postObservatory():
     try:
+        id_role = current_user.id_role
+
         data = dict(request.get_json())
         translations_data = data.pop("translations", [])
         db_obj = models.Observatory(**data)
@@ -339,6 +341,8 @@ def returnAllUsers(id_app):
 def returnCurrentUser():
     id_role = current_user.id_role
     user_data = AppUser.query.filter_by(id_role=id_role).all()
+    test = User.query.filter_by(id_role=id_role).all()
+    print(test[0].groups)
     if not user_data:
         raise NotFound(f"No User with id {id_role}")
     return jsonify([d.as_dict() for d in user_data])

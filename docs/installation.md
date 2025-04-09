@@ -21,7 +21,7 @@ Seuls les ports configurés peuvent entrer en collision avec d'autres services u
 
 - Stopper les containers  
   `./docker/docker.sh down`
-
+da
 - Parfois, mais vraiment très rarement, il faudra juste redémarrer le backend    
   `./docker/docker.sh restart backend`    
 
