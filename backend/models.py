@@ -560,6 +560,11 @@ class ObservatorySchema(ma.SQLAlchemyAutoSchema):
 
 
 class ObservatorySchemaFull(ma.SQLAlchemyAutoSchema):
+    id = fields.Int()
+    logo = fields.String()
+    thumbnail = fields.String()
+    ref = fields.String()
+    color = fields.String()
     translations = ma.Nested(ObservatoryTranslationSchema, many=True)
     comparator = EnumField(ComparatorEnum, by_value=True)
     geom = fields.Method("geomSerialize")
