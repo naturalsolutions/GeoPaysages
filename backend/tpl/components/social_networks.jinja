@@ -1,0 +1,53 @@
+<div class="social-buttons">
+  {% if dbconf.social_networks.facebook %}
+        <a class="social-button facebook" 
+          href="https://www.facebook.com/sharer/sharer.php?u={{ url_for('main.sites', id=site.id_site, _external=True) }}&quote={{ site.name_site }}" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          title="Partager sur Facebook">
+          <i class="icon ion-logo-facebook"></i>
+        </a>
+  {% endif %}
+  {% if dbconf.social_networks.twitter %}
+    <a class="social-button twitter"
+        href="https://twitter.com/intent/tweet?url={{ url_for('main.sites', id=site.id_site, _external=True) }}&text={{ site.name_site }}&hashtags=geopaysages"
+        target="_blank" rel="noopener noreferrer" title="Partager sur Twitter">
+      <i class="icon ion-logo-twitter"></i>
+    </a>
+  {% endif %}
+  {% if dbconf.social_networks.linkedin %}
+    <a class="social-button linkedin"
+        href="https://www.linkedin.com/shareArticle?mini=true&url={{ url_for('main.sites', id=site.id_site, _external=True) }}&title={{ site.name_site }}"
+        target="_blank" rel="noopener noreferrer" title="Partager sur LinkedIn">
+      <i class="icon ion-logo-linkedin"></i>
+    </a>
+  {% endif %}
+  {% if dbconf.social_networks.whatsapp %}
+    <a class="social-button whatsapp"
+        href="https://wa.me/?text={{ site.name_site }}%20{{ url_for('main.sites', id=site.id_site, _external=True) }}"
+        target="_blank" rel="noopener noreferrer" title="Partager sur WhatsApp">
+      <i class="icon ion-logo-whatsapp"></i>
+    </a>
+  {% endif %}
+  {% if dbconf.social_networks.reddit %}
+    <a class="social-button reddit"
+        href="https://www.reddit.com/submit?url={{ url_for('main.sites', id=site.id_site, _external=True) }}&title={{ site.name_site }}"
+        target="_blank" rel="noopener noreferrer" title="Partager sur Reddit">
+      <i class="icon ion-logo-reddit"></i>
+    </a>
+  {% endif %}
+  {% if dbconf.social_networks.pinterest %}
+    <a class="social-button pinterest"
+        href="https://pinterest.com/pin/create/button/?url={{ url_for('main.sites', id=site.id_site, _external=True) }}&description={{ site.name_site }}"
+        target="_blank" rel="noopener noreferrer" title="Partager sur Pinterest">
+      <i class="icon ion-logo-pinterest"></i>
+    </a>
+  {% endif %}
+  {% if dbconf.social_networks.email %}
+    <a class="social-button email"
+        href="mailto:?subject={{ site.name_site }}&body={{ site.name_site }}%20{{ url_for('main.sites', id=site.id_site, _external=True) }}"
+        target="_blank" rel="noopener noreferrer" title="Partager par Email">
+      <i class="icon ion-md-mail"></i>
+    </a>
+  {% endif %}
+</div>

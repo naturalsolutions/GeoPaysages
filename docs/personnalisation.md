@@ -195,3 +195,55 @@ Reprendre la même procédure que pour la page "À propos", c'est à dire :
 - Éditer le fichier `custom/i18n/fr/LC_MESSAGES/messages.po` 
 - Appliquer les changements `./docker/docker.sh exec backend pybabel compile -d ./i18n && ./docker/docker.sh restart backend`
 - Actualiser la page web, les modifications devraient apparaitres
+
+## Boutons de partage sur les réseaux sociaux
+
+Il est possible d’afficher des boutons de partage sur la fiche site pour les réseaux sociaux de votre choix.  
+Pour cela, il suffit d’ajouter une clé `social_networks` dans la table `conf` de la base de données, avec une valeur JSON listant les réseaux à activer.
+
+**Exemple de valeur à insérer dans la table `conf` :**
+
+```json
+{
+  "facebook": true,
+  "twitter": true,
+  "linkedin": true,
+  "whatsapp": true,
+  "reddit": true,
+  "pinterest": true,
+  "email": true
+}
+```
+
+- Mettez la valeur à `true` pour chaque réseau social que vous souhaitez afficher.
+- Les réseaux supportés sont :  
+  - `facebook`
+  - `twitter`
+  - `linkedin`
+  - `whatsapp`
+  - `reddit`
+  - `pinterest`
+  - `email`
+
+**Exemple de requête SQL pour ajouter la clé :**
+
+```sql
+INSERT INTO conf (key, value)
+VALUES (
+  'social_networks',
+  '{
+    "facebook": true,
+    "twitter": true,
+    "linkedin": true,
+    "whatsapp": true,
+    "reddit": true,
+    "pinterest": true,
+    "email": true
+  }'
+)
+ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
+```
+
+> ⚠️ Pensez à adapter la liste selon vos besoins (mettre `false` pour masquer un bouton).
+
+**Une fois la clé ajoutée, les boutons de partage s’afficheront automatiquement sur la fiche site si le composant Jinja est inclus dans le template.**
