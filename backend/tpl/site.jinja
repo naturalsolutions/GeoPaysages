@@ -26,6 +26,25 @@
 <script src="{{ url_for('static', filename='js/sites-utils.js') }}"></script>
 <script src="{{ url_for('static', filename='js/site.js') }}"></script>
 <script src="{{ url_for('static', filename='js/comparator-v' + comparator_version|string + '.js') }}"></script>
+{% if site %}
+<meta property="og:title" content="{{ site.name_site }}" />
+<meta property="og:description" content="{{ site.legend_site }}" />
+<meta property="og:locale" content="en_UK" />
+<meta property="twitter:title" content="{{ site.name_site }}" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="{{ url_for('main.sites', id=site.id_site, _external=True) }}" />
+<meta name="twitter:card" content="summary_large_image" />
+{% if photos %}
+  <meta property="og:image" content="{{ request.url_root }}api/thumbor/presets/200x200/{{ photos[0].filename }}" />
+  <meta property="twitter:image" content="{{ request.url_root }}api/thumbor/presets/200x200/{{ photos[0].filename }}" />
+  <meta property="og:image:alt" content="{{ photos[0].caption }}" />
+  <meta property="twitter:image:alt" content="{{ photos[0].caption }}" />
+{% endif %}
+<meta property="og:description" content="{{ site.legend_site }}" />
+<meta property="twitter:description" content="{{ site.legend_site }}" />
+<meta property="og:site_name" content="Geopaysages" />
+<meta property="twitter:site" content="@Geopaysages" />
+{% endif %}
 {% endblock %}
 
 {% block title_mobile %}{{ _('site.title_mobile') }}{% endblock title_mobile %}
@@ -34,14 +53,30 @@
 
 {% block content %}
 
-<div class="mb-4 mt-3 mt-md-2 text-center">
-  <h1 class="text-uppercase">{{ site.name_site }} | {{ site.ville.nom_commune }} 
-  {% if site.ref_site and dbconf.show_site_ref: %}
-    <small class="text-lowercase">(réf. : {{ site.ref_site }})</small>
-  {% endif %}</h1>
-  {% if isMultiObservatories(): %}
-  <h3 class="text-secondary text-uppercase"><img class="mr-2" src="{{ getThumborUrl('fit-in/25x25', site.observatory.logo) }}">{{ site.observatory.title }}</h3>
-  {% endif %}
+<div class="mb-4 mt-3 mt-md-2 px-3 my-4">
+  <div class="row align-items-end">
+    <div class="col-md-3 d-none d-md-block"></div>
+    <div class="col-12 col-md-6 text-center">
+      <h1 class="text-uppercase">{{ site.name_site }} | {{ site.ville.nom_commune }} 
+        {% if site.ref_site and dbconf.show_site_ref: %}
+          <small class="text-lowercase">(réf. : {{ site.ref_site }})</small>
+        {% endif %}
+      </h1>
+      {% if isMultiObservatories(): %}
+        <h3 class="text-secondary text-uppercase">
+          <img class="mr-2" src="{{ getThumborUrl('fit-in/25x25', site.observatory.logo) }}">
+          {{ site.observatory.title }}
+        </h3>
+      {% endif %}
+    </div>
+    {% if dbconf.social_networks %}
+    <div class="col-md-3 d-flex justify-content-end">
+      <div class="social-networks">
+        {% include 'components/social_networks.jinja' %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
 </div>
 
 <div class="page-content container-fluid px-0 px-sm-3 pb-4" id="js-app-site">
